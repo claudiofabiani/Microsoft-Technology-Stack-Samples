@@ -1,0 +1,168 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "westeurope"
+    },
+    "networkInterfaceName": {
+      "value": "ni-armex"
+    },
+    "networkSecurityGroupName": {
+      "value": "nsg-armex"
+    },
+    "networkSecurityGroupRules": {
+      "value": [
+        {
+          "name": "SSH",
+          "properties": {
+            "priority": 300,
+            "protocol": "TCP",
+            "access": "Allow",
+            "direction": "Inbound",
+            "sourceAddressPrefix": "*",
+            "sourcePortRange": "*",
+            "destinationAddressPrefix": "*",
+            "destinationPortRange": "22"
+          }
+        },
+        {
+          "name": "HTTP",
+          "properties": {
+            "priority": 320,
+            "protocol": "TCP",
+            "access": "Deny",
+            "direction": "Inbound",
+            "sourceAddressPrefix": "*",
+            "sourcePortRange": "*",
+            "destinationAddressPrefix": "*",
+            "destinationPortRange": "80"
+          }
+        },
+        {
+          "name": "RDP",
+          "properties": {
+            "priority": 340,
+            "protocol": "TCP",
+            "access": "Allow",
+            "direction": "Inbound",
+            "sourceAddressPrefix": "*",
+            "sourcePortRange": "*",
+            "destinationAddressPrefix": "*",
+            "destinationPortRange": "3389"
+          }
+        },
+        {
+          "name": "FTPIn",
+          "properties": {
+            "priority": 200,
+            "protocol": "TCP",
+            "access": "Allow",
+            "direction": "Inbound",
+            "sourceAddressPrefix": "*",
+            "sourcePortRange": "*",
+            "destinationAddressPrefix": "*",
+            "destinationPortRange": "21"
+          }
+        },
+        {
+          "name": "FTPPassiveIn",
+          "properties": {
+            "priority": 210,
+            "protocol": "TCP",
+            "access": "Allow",
+            "direction": "Inbound",
+            "sourceAddressPrefix": "*",
+            "sourcePortRange": "*",
+            "destinationAddressPrefix": "*",
+            "destinationPortRange": "5000-5100"
+          }
+        },
+        {
+          "name": "SFTPIn",
+          "properties": {
+            "priority": 220,
+            "protocol": "TCP",
+            "access": "Allow",
+            "direction": "Inbound",
+            "sourceAddressPrefix": "*",
+            "sourcePortRange": "*",
+            "destinationAddressPrefix": "*",
+            "destinationPortRange": "990"
+          }
+        },
+        {
+          "name": "FTPOut",
+          "properties": {
+            "priority": 230,
+            "protocol": "TCP",
+            "access": "Allow",
+            "direction": "Outbound",
+            "sourceAddressPrefix": "*",
+            "sourcePortRange": "*",
+            "destinationAddressPrefix": "*",
+            "destinationPortRange": "20"
+          }
+        },
+        {
+          "name": "SFTPOut",
+          "properties": {
+            "priority": 240,
+            "protocol": "TCP",
+            "access": "Allow",
+            "direction": "Outbound",
+            "sourceAddressPrefix": "*",
+            "sourcePortRange": "*",
+            "destinationAddressPrefix": "*",
+            "destinationPortRange": "998"
+          }
+        }
+      ]
+    },
+    "subnetName": {
+      "value": "default"
+    },
+    "virtualNetworkName": {
+      "value": "vn-armex"
+    },
+    "addressPrefixes": {
+      "value": [
+        "10.0.0.0/24"
+      ]
+    },
+    "subnets": {
+      "value": [
+        {
+          "name": "default",
+          "properties": {
+            "addressPrefix": "10.0.0.0/24"
+          }
+        }
+      ]
+    },
+    "publicIpAddressName": {
+      "value": "pia-armex"
+    },
+    "publicIpAddressType": {
+      "value": "Static"
+    },
+    "publicIpAddressSku": {
+      "value": "Basic"
+    },
+    "sftpVirtualMachineName": {
+      "value": "vmarmex"
+    },
+    "vmExtensionName": {
+      "value": "CustomScriptExtension"
+    },
+    "sftpConfigurationModulesUrl": {
+      "value": "https://nintexdiag748.blob.core.windows.net/armtemplate/ConfigLinuxSftpServer.sh"
+    },
+    "sftpOsDiskType": {
+      "value": "Standard_LRS"
+    },
+    "sftpVirtualMachineSize": {
+      "value": "Standard_B1ms"
+    }
+  }
+}

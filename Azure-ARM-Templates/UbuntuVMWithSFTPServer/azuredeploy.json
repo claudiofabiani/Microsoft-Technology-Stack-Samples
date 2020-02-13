@@ -1,0 +1,213 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string"
+    },
+    "networkInterfaceName": {
+      "type": "string"
+    },
+    "networkSecurityGroupName": {
+      "type": "string"
+    },
+    "networkSecurityGroupRules": {
+      "type": "array"
+    },
+    "subnetName": {
+      "type": "string"
+    },
+    "virtualNetworkName": {
+      "type": "string"
+    },
+    "addressPrefixes": {
+      "type": "array"
+    },
+    "subnets": {
+      "type": "array"
+    },
+    "publicIpAddressName": {
+      "type": "string"
+    },
+    "publicIpAddressType": {
+      "type": "string"
+    },
+    "publicIpAddressSku": {
+      "type": "string"
+    },
+    "sftpVirtualMachineName": {
+      "type": "string"
+    },
+    "vmExtensionName": {
+      "type": "string"
+    },
+    "sftpConfigurationModulesUrl": {
+      "type": "string"
+    },
+    "sftpOsDiskType": {
+      "type": "string"
+    },
+    "sftpVirtualMachineSize": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "networkInterfaceName": "[parameters('networkInterfaceName')]",
+    "networkSecurityGroupName": "[parameters('networkSecurityGroupName')]",
+    "networkSecurityGroupRules": "[parameters('networkSecurityGroupRules')]",
+    "subnetName": "[parameters('subnetName')]",
+    "virtualNetworkName": "[parameters('virtualNetworkName')]",
+    "addressPrefixes": "[parameters('addressPrefixes')]",
+    "subnets": "[parameters('subnets')]",
+    "publicIpAddressName": "[parameters('publicIpAddressName')]",
+    "publicIpAddressType": "[parameters('publicIpAddressType')]",
+    "publicIpAddressSku": "[parameters('publicIpAddressSku')]",
+    "sftpVirtualMachineName": "[parameters('sftpVirtualMachineName')]",
+    "vmExtensionName": "[parameters('vmExtensionName')]",
+    "sftpConfigurationModulesUrl": "[parameters('sftpConfigurationModulesUrl')]",
+    "sftpOsDiskType": "[parameters('sftpOsDiskType')]",
+    "sftpVirtualMachineSize": "[parameters('sftpVirtualMachineSize')]",
+    "sftpAdminUsername": "SFTPServerAdmin",
+    "sftpAdminPassword": "SFTPServerPwd0",
+    "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]",
+    "vnetId": "[resourceId(resourceGroup().name,'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+    "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]"
+  },
+  "resources": [
+    {
+      "name": "[variables('networkInterfaceName')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2018-10-01",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkSecurityGroups/', variables('networkSecurityGroupName'))]",
+        "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
+        "[concat('Microsoft.Network/publicIpAddresses/', variables('publicIpAddressName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              },
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIpAddress": {
+                "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIpAddresses', variables('publicIpAddressName'))]"
+              }
+            }
+          }
+        ],
+        "networkSecurityGroup": {
+          "id": "[variables('nsgId')]"
+        }
+      }
+    },
+    {
+      "name": "[variables('networkSecurityGroupName')]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2018-08-01",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": "[variables('networkSecurityGroupRules')]"
+      }
+    },
+    {
+      "name": "[variables('virtualNetworkName')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2018-08-01",
+      "location": "[parameters('location')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": "[variables('addressPrefixes')]"
+        },
+        "subnets": "[variables('subnets')]"
+      }
+    },
+    {
+      "name": "[variables('publicIpAddressName')]",
+      "type": "Microsoft.Network/publicIpAddresses",
+      "apiVersion": "2018-08-01",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publicIpAllocationMethod": "[variables('publicIpAddressType')]",
+        "dnsSettings": {
+          "domainNameLabel": "[variables('sftpVirtualMachineName')]"
+        }
+      },
+      "sku": {
+        "name": "[variables('publicIpAddressSku')]"
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2018-10-01",
+      "name": "[variables('sftpVirtualMachineName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces/', parameters('networkInterfaceName'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('sftpVirtualMachineSize')]"
+        },
+        "osProfile": {
+          "computerName": "VirtualMachineSftp",
+          "adminUsername": "[variables('sftpAdminUsername')]",
+          "adminPassword": "[variables('sftpAdminPassword')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": false,
+            "provisionVMAgent": true
+          },
+          "secrets": [],
+          "allowExtensionOperations": true
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "16.04-LTS",
+            "version": "latest"
+          },
+          "osDisk": {
+            "osType": "Linux",
+            "createOption": "FromImage",
+            "diskSizeGB": 30
+          },
+          "dataDisks": [
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',parameters('networkInterfaceName'))]"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(variables('sftpVirtualMachineName'),'/', variables('vmExtensionName'))]",
+      "apiVersion": "2015-06-15",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('sftpVirtualMachineName'))]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+        },
+        "protectedSettings": {
+          "commandToExecute": "sh ConfigLinuxSftpServer.sh",
+          "fileUris": [ "[variables('sftpConfigurationModulesUrl')]" ]
+        }
+      }
+    }
+  ],
+  "outputs": {}
+}
