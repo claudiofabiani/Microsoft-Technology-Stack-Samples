@@ -1,2 +1,2 @@
 # Microsoft-Technology-Stack-Samples
-Test Readme file
+This repo contains some samples related to Microsoft Technologies useful to solve some recurring problemns.
