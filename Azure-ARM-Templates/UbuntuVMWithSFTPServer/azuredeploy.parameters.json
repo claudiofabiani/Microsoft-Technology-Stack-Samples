@@ -156,7 +156,7 @@
       "value": "CustomScriptExtension"
     },
     "sftpConfigurationModulesUrl": {
-      "value": "https://nintexdiag748.blob.core.windows.net/armtemplate/ConfigLinuxSftpServer.sh"
+      "value": "https://<storageaccountname>.blob.core.windows.net/<containername>/ConfigLinuxSftpServer.sh"
     },
     "sftpOsDiskType": {
       "value": "Standard_LRS"
