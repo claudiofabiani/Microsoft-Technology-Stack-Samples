@@ -7,11 +7,11 @@ Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "Azure_ARM_Templates", "Azur
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Azure_Functions", "Azure_Functions", "{A4549DCA-AA08-4344-96AC-25DE4509AD58}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Avro_Schemaless_Event_Receiver", "Avro_Schemaless_Event_Receiver\Avro_Schemaless_Event_Receiver.csproj", "{418D0934-A926-45B7-9F26-459B6B9B639B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Avro_Schemaless_Event_Receiver", "Azure_Functions\Avro_Schemaless_Event_Receiver\Avro_Schemaless_Event_Receiver.csproj", "{418D0934-A926-45B7-9F26-459B6B9B639B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Avro_Schemaless_Event_Receiver.EventSender", "Avro_Schemaless_Event_Receiver.EventSender", "{0E49422F-8BEF-45F9-AF14-CF141A596375}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Avro_Schemaless_Event_Receiver.EventSender", "Azure_Functions\Avro_Schemaless_Event_Receiver.EventSender", "{0E49422F-8BEF-45F9-AF14-CF141A596375}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSender", "Avro_Schemaless_Event_Receiver.EventSender\EventSender\EventSender.csproj", "{6B1CD857-64C4-4416-83AC-A7DA29FADAD7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSender", "Azure_Functions\Avro_Schemaless_Event_Receiver.EventSender\EventSender\EventSender.csproj", "{6B1CD857-64C4-4416-83AC-A7DA29FADAD7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
