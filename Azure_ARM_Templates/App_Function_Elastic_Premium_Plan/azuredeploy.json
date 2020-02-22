@@ -1,0 +1,108 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string"
+    },
+    "storageAccountName": {
+      "type": "string"
+    },
+    "storageAccountType": {
+      "type": "string"
+    },
+    "functionAppName": {
+      "type": "string"
+    },
+    "elasticPremiumPlanName": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "location": "[parameters('location')]",
+    "storageAccountName": "[parameters('storageAccountName')]",
+    "storageAccountType": "[parameters('storageAccountType')]",
+    "functionAppName": "[parameters('functionAppName')]",
+    "elasticPremiumPlanName": "[parameters('elasticPremiumPlanName')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('storageAccountName')]",
+      "location": "[variables('location')]",
+      "apiVersion": "2018-07-01",
+      "sku": {
+        "name": "[variables('storageAccountType')]"
+      },
+      "kind": "StorageV2"
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2016-09-01",
+      "name": "[variables('elasticPremiumPlanName')]",
+      "location": "[variables('location')]",
+      "sku": {
+        "name": "EP2",
+        "tier": "ElasticPremium",
+        "size": "EP2",
+        "family": "EP",
+        "capacity": 2
+      },
+      "kind": "elastic",
+      "properties": {
+        "name": "[variables('elasticPremiumPlanName')]",
+        "perSiteScaling": false,
+        "reserved": false,
+        "targetWorkerCount": 0,
+        "targetWorkerSizeId": 0,
+        "maximumElasticWorkerCount": 10,
+        "numberOfWorkers": 2
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ]
+    },
+    {
+      "apiVersion": "2016-03-01",
+      "type": "Microsoft.Web/sites",
+      "name": "[variables('functionAppName')]",
+      "location": "[variables('location')]",
+      "kind": "functionapp",
+      "properties": {
+        "name": "[variables('functionAppName')]",
+        "serverFarmId": "[variables('elasticPremiumPlanName')]",
+        "hostingEnvironment": "",
+        "clientAffinityEnabled": false,
+        "siteConfig": {
+          "alwaysOn": true,
+          "use32BitWorkerProcess": false,
+          "cors": {
+            "allowedOrigins": [
+              "*"
+            ]
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Web/serverfarms/', variables('elasticPremiumPlanName'))]"
+      ],
+      "resources": [
+        {
+          "apiVersion": "2015-08-01",
+          "name": "appsettings",
+          "type": "config",
+          "properties": {
+            "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-04-01').keys[0].value)]",
+            "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-04-01').keys[0].value)]",
+            "FUNCTIONS_EXTENSION_VERSION": "~2",
+            "FUNCTIONS_WORKER_RUNTIME": "dotnet"
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/Sites',variables('functionAppName'))]"
+          ]
+        }
+      ]
+    }
+  ],
+  "outputs": {}
+}

@@ -23,13 +23,17 @@
   <Import Condition=" Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Deployment\1.1\DeploymentProject.targets') " Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Deployment\1.1\DeploymentProject.targets" />
   <!-- vertag<:>end -->
   <ItemGroup>
+    <None Include="App_Function_Consumption_Plan\azuredeploy.json" />
+    <None Include="App_Function_Consumption_Plan\azuredeploy.parameters.json" />
+    <None Include="App_Function_Elastic_Premium_Plan\azuredeploy.json" />
+    <None Include="App_Function_Elastic_Premium_Plan\azuredeploy.parameters.json" />
     <None Include="Deployment.targets">
       <Visible>False</Visible>
     </None>
-    <None Include="UbuntuVMWithSFTPServer\azuredeploy.json" />
-    <None Include="UbuntuVMWithSFTPServer\azuredeploy.parameters.json" />
-    <None Include="UbuntuVMWithSFTPServer\ConfigLinuxSftpServer.sh" />
-    <None Include="UbuntuVMWithSFTPServer\DeployScript.ps1" />
+    <None Include="Ubuntu_VM_SFTP_Server\azuredeploy.json" />
+    <None Include="Ubuntu_VM_SFTP_Server\azuredeploy.parameters.json" />
+    <None Include="Ubuntu_VM_SFTP_Server\ConfigLinuxSftpServer.sh" />
+    <None Include="Ubuntu_VM_SFTP_Server\DeployScript.ps1" />
   </ItemGroup>
   <Target Name="GetReferenceAssemblyPaths" />
 </Project>

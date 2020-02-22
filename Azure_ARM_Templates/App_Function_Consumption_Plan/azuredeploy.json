@@ -1,0 +1,96 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string"
+    },
+    "storageAccountName": {
+      "type": "string"
+    },
+    "storageAccountType": {
+      "type": "string"
+    },
+    "functionAppName": {
+      "type": "string"
+    },
+    "consumptionPlanName": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "location": "[parameters('location')]",
+    "storageAccountName": "[parameters('storageAccountName')]",
+    "storageAccountType": "[parameters('storageAccountType')]",
+    "functionAppName": "[parameters('functionAppName')]",
+    "consumptionPlanName": "[parameters('consumptionPlanName')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('storageAccountName')]",
+      "location": "[variables('location')]",
+      "apiVersion": "2018-07-01",
+      "sku": {
+        "name": "[variables('storageAccountType')]"
+      },
+      "kind": "StorageV2"
+    },
+    {
+      "apiVersion": "2015-04-01",
+      "name": "[variables('consumptionPlanName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[parameters('location')]",
+      "properties": {
+        "name": "[variables('consumptionPlanName')]",
+        "computeMode": "Dynamic",
+        "sku": "Dynamic"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ]
+    },
+    {
+      "apiVersion": "2016-03-01",
+      "type": "Microsoft.Web/sites",
+      "name": "[variables('functionAppName')]",
+      "location": "[parameters('location')]",
+      "kind": "functionapp",
+      "properties": {
+        "name": "[variables('functionAppName')]",
+        "serverFarmId": "[variables('consumptionPlanName')]",
+        "hostingEnvironment": "",
+        "clientAffinityEnabled": false,
+        "siteConfig": {
+          "use32BitWorkerProcess": false,
+          "cors": {
+            "allowedOrigins": [
+              "*"
+            ]
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Web/serverfarms/', variables('consumptionPlanName'))]"
+      ],
+      "resources": [
+        {
+          "apiVersion": "2015-08-01",
+          "name": "appsettings",
+          "type": "config",
+          "properties": {
+            "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-04-01').keys[0].value)]",
+            "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-04-01').keys[0].value)]",
+            "FUNCTIONS_EXTENSION_VERSION": "~2",
+            "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+            "WEBSITE_NODE_DEFAULT_VERSION": "10.14.1"
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/Sites',variables('functionAppName'))]"
+          ]
+        }
+      ]
+    }
+  ],
+  "outputs": {}
+}
