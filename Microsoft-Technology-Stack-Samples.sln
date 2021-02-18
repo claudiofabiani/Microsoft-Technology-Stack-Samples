@@ -9,9 +9,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Azure_Functions", "Azure_Fu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Avro_Schemaless_Event_Receiver", "Azure_Functions\Avro_Schemaless_Event_Receiver\Avro_Schemaless_Event_Receiver.csproj", "{418D0934-A926-45B7-9F26-459B6B9B639B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Avro_Schemaless_Event_Receiver.EventSender", "Azure_Functions\Avro_Schemaless_Event_Receiver.EventSender", "{0E49422F-8BEF-45F9-AF14-CF141A596375}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Avro_Schemaless_Event_Receiver.EventSender", "Avro_Schemaless_Event_Receiver.EventSender", "{0E49422F-8BEF-45F9-AF14-CF141A596375}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSender", "Azure_Functions\Avro_Schemaless_Event_Receiver.EventSender\EventSender\EventSender.csproj", "{6B1CD857-64C4-4416-83AC-A7DA29FADAD7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web_API", "Web_API", "{E072EF5F-E709-465F-BFC5-59DF80EACD54}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPI_0", "Web_API\WebAPI_0\WebAPI_0.csproj", "{44D4BAE0-13CD-4887-B9A7-1331E022F190}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "Web_API\DAL\DAL.csproj", "{B4D995D6-C3AA-4716-A1EC-704C54C2BF06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +37,14 @@ Global
 		{6B1CD857-64C4-4416-83AC-A7DA29FADAD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B1CD857-64C4-4416-83AC-A7DA29FADAD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B1CD857-64C4-4416-83AC-A7DA29FADAD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44D4BAE0-13CD-4887-B9A7-1331E022F190}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44D4BAE0-13CD-4887-B9A7-1331E022F190}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44D4BAE0-13CD-4887-B9A7-1331E022F190}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44D4BAE0-13CD-4887-B9A7-1331E022F190}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4D995D6-C3AA-4716-A1EC-704C54C2BF06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4D995D6-C3AA-4716-A1EC-704C54C2BF06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4D995D6-C3AA-4716-A1EC-704C54C2BF06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4D995D6-C3AA-4716-A1EC-704C54C2BF06}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,6 +53,8 @@ Global
 		{418D0934-A926-45B7-9F26-459B6B9B639B} = {A4549DCA-AA08-4344-96AC-25DE4509AD58}
 		{0E49422F-8BEF-45F9-AF14-CF141A596375} = {A4549DCA-AA08-4344-96AC-25DE4509AD58}
 		{6B1CD857-64C4-4416-83AC-A7DA29FADAD7} = {0E49422F-8BEF-45F9-AF14-CF141A596375}
+		{44D4BAE0-13CD-4887-B9A7-1331E022F190} = {E072EF5F-E709-465F-BFC5-59DF80EACD54}
+		{B4D995D6-C3AA-4716-A1EC-704C54C2BF06} = {E072EF5F-E709-465F-BFC5-59DF80EACD54}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EA1E71DA-A3DC-4D9B-9211-9F6484C6DA51}
