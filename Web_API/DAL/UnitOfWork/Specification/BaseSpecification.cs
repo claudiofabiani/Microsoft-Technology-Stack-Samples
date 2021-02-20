@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 
 namespace DAL.UnitOfWork.Specification
@@ -17,6 +18,20 @@ namespace DAL.UnitOfWork.Specification
         public BaseSpecification()
         {
         }
+
+        public BaseSpecification(int pageIndex = 0, int pageSize = 0, bool? asNoTracking = false, string sortBy = null, bool? ascending = false)
+        {
+            if (ascending.HasValue && !String.IsNullOrWhiteSpace(sortBy))
+            {
+                ApplySorting(sortBy, ascending.Value);
+            }
+            if (asNoTracking.HasValue && asNoTracking.Value)
+            {
+                ApplyNoTracking();
+            }
+            SetPagination(pageIndex, pageSize); // va messo fuori dallo specification, va nella gestione della risposta paginata
+        }
+
         public Expression<Func<T, bool>> Criteria { get; set; }
         public List<Expression<Func<T, object>>> Includes { get; } = new List<Expression<Func<T, object>>>();
         public List<string> IncludeStrings { get; } = new List<string>();
@@ -37,6 +52,16 @@ namespace DAL.UnitOfWork.Specification
         protected virtual void AddInclude(string includeString)
         {
             IncludeStrings.Add(includeString);
+        }
+
+        public void SetPagination(int pageIndex, int pageSize)
+        {
+            if (pageIndex != 0 && pageSize != 0)
+            {
+                int skip = (pageIndex - 1) * pageSize;
+                int take = pageSize;
+                this.ApplyPaging(skip, take);
+            }
         }
 
         protected virtual void ApplyPaging(int skip, int take)
@@ -64,6 +89,45 @@ namespace DAL.UnitOfWork.Specification
         public virtual void ApplyNoTracking()
         {
             AsNoTracking = true;
+        }
+
+        // https://stackoverflow.com/questions/63082758/ef-core-specification-pattern-add-all-column-for-sorting-data-with-custom-specif
+        protected void ApplySorting(string sort, bool ascending)
+        {
+            if (!string.IsNullOrEmpty(sort))
+            {
+                var descending = !ascending;
+                var propertyName = sort;
+
+                var specificationType = GetType().BaseType;
+                var targetType = specificationType.GenericTypeArguments[0];
+                var property = targetType.GetRuntimeProperty(propertyName) ??
+                               throw new InvalidOperationException($"Because the property {propertyName} does not exist it cannot be sorted.");
+
+                // Create an Expression<Func<T, object>>.
+                var lambdaParamX = Expression.Parameter(targetType, "x");
+
+                var propertyReturningExpression = Expression.Lambda(
+                    Expression.Convert(
+                        Expression.Property(lambdaParamX, property),
+                        typeof(object)),
+                    lambdaParamX);
+
+                if (descending)
+                {
+                    specificationType.GetMethod(
+                            nameof(ApplyOrderByDescending),
+                            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                        .Invoke(this, new object[] { propertyReturningExpression });
+                }
+                else
+                {
+                    specificationType.GetMethod(
+                            nameof(ApplyOrderBy),
+                            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                        .Invoke(this, new object[] { propertyReturningExpression });
+                }
+            }
         }
     }
 }

@@ -19,10 +19,12 @@ namespace DAL.UnitOfWork.Specification
         public string Mail { set; get; }
         public int? Age { set; get; }
 
-        public StudentSpecification()
+        public StudentSpecification(int pageIndex = 0, int pageSize = 0, bool? asNoTracking = false, string sortBy = null, bool? ascending = false) : base(pageIndex, pageSize, asNoTracking, sortBy, ascending)
         {
-
+            this.SetCriteria();
         }
+
+        
 
         public void SetCriteria()
         {

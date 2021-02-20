@@ -30,9 +30,9 @@ namespace WebAPI_0.Controllers
         }
         // GET: api/Student
         [HttpGet]
-        public IEnumerable<Student> Get()
+        public async Task<IEnumerable<Student>> Get()
         {
-            IEnumerable<Student> s = _studentManager.List(null, null, "ar", new DateTime(2004, 01, 01), null, null, null, null, true);
+            IEnumerable<Student> s = await _studentManager.ListAsync(2, 3, "EnrollmentDate", true, null, null, null, null, null, null, null, null, true);
             return s;
         }
 

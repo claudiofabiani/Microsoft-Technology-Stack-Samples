@@ -41,12 +41,13 @@ namespace DAL.UnitOfWork.Specification
                 query = query.GroupBy(specification.GroupBy).SelectMany(x => x);
             }
 
-            // Apply paging if enabled
-            if (specification.IsPagingEnabled)
-            {
-                query = query.Skip(specification.Skip)
-                             .Take(specification.Take);
-            }
+            // Apply paging if enabled 
+            // spostata nella paginazione
+            //if (specification.IsPagingEnabled)
+            //{
+            //    query = query.Skip(specification.Skip)
+            //                 .Take(specification.Take);
+            //}
 
             if (specification.AsNoTracking)
             {
