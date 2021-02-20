@@ -1,5 +1,6 @@
 ﻿using DAL.UnitOfWork.Context;
 using DAL.UnitOfWork.Repository.Interface;
+using DAL.UnitOfWork.Specification;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Text;
 
 namespace DAL.UnitOfWork.Repository.Implementation
 {
-    public class GenericRepository<TEntity> where TEntity : class//, IGenericRepository<TEntity>
+    public class GenericRepository<TEntity>: IGenericRepository<TEntity> where TEntity: class
     {
         internal EFContext context;
         internal DbSet<TEntity> dbSet;
@@ -20,32 +21,10 @@ namespace DAL.UnitOfWork.Repository.Implementation
             this.dbSet = context.Set<TEntity>();
         }
 
-        public virtual IEnumerable<TEntity> Get(
-            Expression<Func<TEntity, bool>> filter = null,
-            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-            string includeProperties = "")
+        public IEnumerable<TEntity> List(ISpecification<TEntity> specification = null)
         {
-            IQueryable<TEntity> query = dbSet;
-
-            if (filter != null)
-            {
-                query = query.Where(filter);
-            }
-
-            foreach (var includeProperty in includeProperties.Split
-                (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-            {
-                query = query.Include(includeProperty);
-            }
-
-            if (orderBy != null)
-            {
-                return orderBy(query).ToList();
-            }
-            else
-            {
-                return query.ToList();
-            }
+            IEnumerable<TEntity> list = ApplySpecification(specification).ToList();
+            return list;
         }
 
         public virtual TEntity GetByID(object id)
@@ -56,6 +35,16 @@ namespace DAL.UnitOfWork.Repository.Implementation
         public virtual void Insert(TEntity entity)
         {
             dbSet.Add(entity);
+        }
+        public void InsertRange(IEnumerable<TEntity> entities)
+        {
+            dbSet.AddRange(entities);
+        }
+
+        public int Count(ISpecification<TEntity> specification = null)
+        {
+            int count = ApplySpecification(specification).Count();
+            return count;
         }
 
         public virtual void Delete(object id)
@@ -73,10 +62,19 @@ namespace DAL.UnitOfWork.Repository.Implementation
             dbSet.Remove(entityToDelete);
         }
 
+        public void DeleteRange(IEnumerable<TEntity> entities)
+        {
+            dbSet.RemoveRange(entities);
+        }
+
         public virtual void Update(TEntity entityToUpdate)
         {
             dbSet.Attach(entityToUpdate);
             context.Entry(entityToUpdate).State = EntityState.Modified;
+        }
+        private IQueryable<TEntity> ApplySpecification(ISpecification<TEntity> spec)
+        {
+            return SpecificationEvaluator<TEntity>.GetQuery(dbSet.AsQueryable(), spec);
         }
     }
 }

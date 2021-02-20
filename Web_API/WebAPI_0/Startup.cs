@@ -1,4 +1,9 @@
+using Autofac;
+using DAL.UnitOfWork;
 using DAL.UnitOfWork.Context;
+using DAL.UnitOfWork.Repository.Implementation;
+using DAL.UnitOfWork.Repository.Interface;
+using CompositionRoot.Module;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -28,33 +33,50 @@ namespace WebAPI_0
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddControllers();
+
+            
             /*
                 usare entity framework
                 metti retry policy si database
                 fare il pattern unit of work con ef crea il DAL (implementa specification, paging e ordering)
                 fare un livello di business che usa il UoW pattern 
-                l'app userà il layer di business
-                così ho tre layer
+                l'app userï¿½ il layer di business
+                cosï¿½ ho tre layer
 
                 il dato che ho tre livelli usare il dependency resolver (se ritrovi come avevi fatto)
                 
                 metti gestion centralizzata di log
-                metti risposta strutturata dellìapi
+                metti risposta strutturata dellï¿½api
                 usa automapper con dto
 
                 poi metti swagger
                 
              */
-            services.AddDbContext<EFContext>(options =>
-            {
-            options.UseSqlServer(
-                Configuration.GetConnectionString("DefaultConnection"),
-                sqlOptions => sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name)
-                );                
-            },
-            ServiceLifetime.Scoped);
 
-            services.AddControllers();
+            //services.AddDbContext<EFContext>(options =>
+            //{
+            //options.UseSqlServer(
+            //    Configuration.GetConnectionString("DefaultConnection"),
+            //    sqlOptions => sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name)
+            //    );                
+            //},
+            //ServiceLifetime.Scoped);
+
+            ////services.AddScoped(typeof(GenericRepository<>));
+            //services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            //services.AddScoped<IStudentRepository, StudentRepository>();
+            //services.AddScoped<UnitOfWork>();
+
+
+            
+        }
+
+        // https://autofaccn.readthedocs.io/en/latest/integration/aspnetcore.html#asp-net-core-3-0-and-generic-hosting
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            GroupModule.InjectDependencies(builder);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
