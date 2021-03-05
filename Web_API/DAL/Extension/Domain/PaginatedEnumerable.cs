@@ -20,7 +20,7 @@ namespace DAL.Extension.Domain
             return new PaginatedEnumerable<T>(enumerable, totalCount, pageIndex, pageSize);
         }
     }
-    public abstract class PaginatedEnumerable
+    public class PaginatedEnumerable
     {
         public int PageIndex { get; protected set; }
         public int PageSize { get; protected set; }
@@ -47,6 +47,13 @@ namespace DAL.Extension.Domain
     public sealed class PaginatedEnumerable<T> : PaginatedEnumerable, IEnumerable<T>
     {
         private readonly IEnumerable<T> _enumerable;
+        public IEnumerable<T> Items
+        {
+            get
+            {
+                return _enumerable;
+            }
+        }
 
         /// <summary>
         /// Crea una collezione vuota

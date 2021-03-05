@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BLL.Dto;
 using BLL.Manager.Interface;
 using DAL.Domain;
+using DAL.Extension.Domain;
 using DAL.UnitOfWork;
 using DAL.UnitOfWork.Specification;
 using Microsoft.AspNetCore.Http;
@@ -30,17 +32,30 @@ namespace WebAPI_0.Controllers
         }
         // GET: api/Student
         [HttpGet]
-        public async Task<IEnumerable<Student>> Get()
+        [ProducesResponseType(typeof(PaginatedEnumerableDto<StudentDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Get()
         {
-            IEnumerable<Student> s = await _studentManager.ListAsync(2, 3, "EnrollmentDate", true, null, null, null, null, null, null, null, null, true);
-            return s;
+            PaginatedEnumerableDto<StudentDto> students = await _studentManager.ListAsync(2, 3, "EnrollmentDate", true, null, null, null, null, null, null, null, null, true);
+            
+            return Ok(students);
         }
 
         // GET: api/Student/5
         [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        [ProducesResponseType(typeof(StudentDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
+        public async Task<IActionResult> Get(int id)
         {
-            return "value";
+            var student = await _studentManager.GetStudentByIdAsync(id);
+            if (student != null)
+            {
+                return Ok(student);
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         // POST: api/Student

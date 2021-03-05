@@ -16,6 +16,7 @@ namespace DAL.UnitOfWork.Repository.Interface
         Task<PaginatedEnumerable<TEntity>> ListPaginatedAsync(ISpecification<TEntity> specification = null);
 
         TEntity GetByID(object id);
+        Task<TEntity> GetByIDAsync(object id);
 
         void Insert(TEntity entity);
         void InsertRange(IEnumerable<TEntity> entities);

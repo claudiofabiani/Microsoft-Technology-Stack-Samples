@@ -44,6 +44,7 @@ namespace DAL.UnitOfWork.Specification
         public bool IsPagingEnabled { get; private set; } = false;
         public bool AsNoTracking { get; private set; }
 
+        //da verificare il funzionamento degli include
         protected virtual void AddInclude(Expression<Func<T, object>> includeExpression)
         {
             Includes.Add(includeExpression);

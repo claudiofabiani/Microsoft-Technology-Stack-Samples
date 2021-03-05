@@ -18,6 +18,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using WebAPI_0.Handler;
+using WebAPI_0.Filter;
+using WebAPI_0.Middleware.ApiRespondeMiddleware;
+using AutoMapper;
+using BLL.Dto;
+using DAL.Domain;
+using DAL.Extension.Domain;
+using BLL.Mapping;
 
 namespace WebAPI_0
 {
@@ -34,9 +42,18 @@ namespace WebAPI_0
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+            services.AddControllers(options =>
+                // I filtri permettono di gestire gli errori che avvengono all'interno del codice
+                // Per gestire errori non gestiti all'interno del codice (routing o framework) utilizzare l'handler
+              options.Filters.Add(new ApiExceptionFilterAttribute())
+            );
 
-            
+            // per farlo funzionare se la classe profile sta in un'altro progetto che referenziamo.
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddScoped<ITypeAdapterFactory, AutomapperTypeAdapterFactory>();
+            //services.AddAutoMapper(typeof(Startup).Assembly);
+
+
             /*
                 usare entity framework
                 metti retry policy si database
@@ -52,6 +69,8 @@ namespace WebAPI_0
                 usa automapper con dto
 
                 poi metti swagger
+
+            // vedi risposta strutturata api :https://stackoverflow.com/questions/12806386/is-there-any-standard-for-json-api-response-format
                 
              */
 
@@ -70,7 +89,7 @@ namespace WebAPI_0
             //services.AddScoped<UnitOfWork>();
 
 
-            
+
         }
 
         // https://autofaccn.readthedocs.io/en/latest/integration/aspnetcore.html#asp-net-core-3-0-and-generic-hosting
@@ -89,6 +108,14 @@ namespace WebAPI_0
 
             app.UseHttpsRedirection();
 
+            // I filtri permettono di gestire gli errori che avvengono all'interno del codice
+            // Per gestire errori non gestiti all'interno del codice (routing o framework) utilizzare l'handler
+            
+            app.UseApiResponseWrapperMiddleware();
+            app.ConfigureExceptionHandler();
+
+
+
             app.UseRouting();
 
             app.UseAuthorization();
@@ -99,4 +126,23 @@ namespace WebAPI_0
             });
         }
     }
+
+    //public class AutomapperProfile : Profile
+    //{
+    //    public AutomapperProfile()
+    //    {
+    //        CreateMap<Student, StudentDto>();
+    //        CreateMap<Student, StudentListDto>();
+
+    //        //CreateMap<PaginatedEnumerable<Student>, PaginatedEnumerableDto<StudentListDto>>()
+    //        //        //.ForMember(p => p.Items, opt => opt.MapFrom(s => s.Items))
+    //        //        ;
+
+    //        CreateMap<PaginatedEnumerable, PaginatedEnumerableDto>();
+    //        CreateMap<PaginatedEnumerable<Student>, PaginatedEnumerableDto<StudentDto>>();
+    //        //       //.ForMember(p => p.Items, opt => opt.MapFrom(s => s.Items))
+    //        //       ;
+
+    //    }
+    //}
 }

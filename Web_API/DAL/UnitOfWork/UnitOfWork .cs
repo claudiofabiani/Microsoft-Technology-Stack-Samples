@@ -8,15 +8,17 @@ using System.Text;
 
 namespace DAL.UnitOfWork
 {
+    // referenza https://referbruv.com/blog/posts/understanding-and-implementing-unitofwork-pattern-in-aspnet-core
+    // devono condividere lo stesso context.
     public class UnitOfWork : IDisposable
     {
         private EFContext _context;
         private IStudentRepository _studentRepository;
 
-        public UnitOfWork(EFContext context, IStudentRepository studentRepository)
+        public UnitOfWork(EFContext context)
         {
             _context = context;
-            _studentRepository = studentRepository;
+            _studentRepository = new StudentRepository(_context);
         }
 
         public IStudentRepository StudentRepository

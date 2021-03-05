@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace DAL.UnitOfWork.Repository.Implementation
 {
+
     public class GenericRepository<TEntity>: IGenericRepository<TEntity> where TEntity: class
     {
         internal EFContext context;
@@ -48,6 +49,11 @@ namespace DAL.UnitOfWork.Repository.Implementation
         public virtual TEntity GetByID(object id)
         {
             return dbSet.Find(id);
+        }
+
+        public virtual async Task<TEntity> GetByIDAsync(object id)
+        {
+            return await dbSet.FindAsync(id);
         }
 
         public virtual void Insert(TEntity entity)

@@ -23,7 +23,18 @@ namespace CompositionRoot.Module
                 IConfiguration configuration = x.Resolve<IConfiguration>();
                 var optionsBuilder = new DbContextOptionsBuilder<EFContext>();
                 optionsBuilder.UseSqlServer(
-                    configuration.GetConnectionString("DefaultConnection")
+                    configuration.GetConnectionString("DefaultConnection"),
+                    // retry policy for db connection
+                    // da approfondire
+                    // https://docs.microsoft.com/en-us/ef/ef6/fundamentals/connection-resiliency/retry-logic
+                    // https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/implement-resilient-entity-framework-core-sql-connections
+                    sqlServerOptionsAction: sqlOptions =>
+                    {
+                        sqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 10,
+                        maxRetryDelay: TimeSpan.FromSeconds(10),
+                        errorNumbersToAdd: null);
+                    }
                     );
                 return new EFContext(optionsBuilder.Options);
             }).InstancePerLifetimeScope();
